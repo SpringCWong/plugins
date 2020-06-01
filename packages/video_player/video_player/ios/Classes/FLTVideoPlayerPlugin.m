@@ -342,7 +342,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)duration {
-  return FLTCMTimeToMillis([[_player currentItem] duration]);
+    CMTime duration = [[_player currentItem] duration];
+    // handle duration == 0 when playing HLS
+    if (duration.value == 0) {
+        duration = _player.currentItem.seekableTimeRanges.lastObject.CMTimeRangeValue.duration;
+    }
+  return FLTCMTimeToMillis(duration);
 }
 
 - (void)seekTo:(int)location {
